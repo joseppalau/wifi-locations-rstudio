@@ -1,0 +1,14 @@
+Se comparan las distribuciones de los atributos space, buildings, floors, users y phones, y las histogramas 
+no muestran demasiadas diferencias entre la tabla entera y el 75% de las filas. 
+
+Para filtrar las cilumnas que aportan poco valor a los modeles calculas sus medias y generamos unos índices en base al valor de esa media.
+length(indices_medias_075 con valor = 100) = 60
+length(indices_medias_075 con valor > 95) = 312 // si quitamos estos índices, el ncol de los puntos wifi será 208.
+length(indices_medias_075 con valor > 90) = 422
+length(indices_medias_075 con valor > 80) = 472
+
+nos quedamos con la FUN mean porque la FUN median todos los valores = 100 (eso significa que más de la mitad de los valores
+de todas las columnas son 100
+
+21-09-208
+Se corre un svm a las 11.00
