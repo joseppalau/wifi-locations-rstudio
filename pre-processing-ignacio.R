@@ -32,6 +32,10 @@ spaceID_count <- trainingData %>% group_by(SPACEID) %>% summarise(count = n())
 ggplot(spaceID_count, aes(x = spaceID_count$SPACEID, y = spaceID_count$count)) + geom_col() + ggtitle("Nº SPACEID medidos") + labs(x="SpacesId", y="Count")
 summary(spaceID_count)
 var(spaceID_count$count)
+
+# Josep, you didn't get the point. Is the SPACEID unique? In other words, knowing only the SPACEID can you know to which combination of
+# building and floor belongs?
+
 #2.2. distribución buildings and floors
 # Ignacio: What about the locations of the records inside each/building floor?
 building_floor_count <- trainingData %>% group_by(BUILDINGID, FLOOR) %>% summarise(count = n())
@@ -45,6 +49,10 @@ phoneId_count <- trainingData %>% group_by(PHONEID) %>% summarise(count = n())
 ggplot(phoneId_count, aes(x=PHONEID, y=phoneId_count$count)) + geom_col() + ggtitle("Nº Veces móviles") + labs(x="Móviles", y="Count")
 phoneId_count
 var(phoneId_count$count)
+
+# Going an stup further. Take the role of an student just landed to the campus. Do you know beforehand his/her phoneID? Moreover, his/her
+# phoneID will be in the training set? ;)
+
 #2.4. distribución USERID
 # Ignacio: The same as in the previous point
 userID_count <- trainingData %>% group_by(USERID) %>% summarise(count = n())
@@ -61,6 +69,8 @@ trainingData_075 <- trainingData[sample(nrow(trainingData), tdr*0.75), ]
 #3.2. Reducing in atributes
 #3.2.1 código para reducir columnas desde 1 a 520 (puntos wifi) usando la media/mediana o modo - tan solo hay que cambiar FUN 
 # Ignacio: Por que haces solo la media de tu trainingData_075 y no del dataset completo?
+
+# Correct! You should do it on the whole dataset. Not only in your split!
 medias_075 <- sapply(trainingData_075[,1:520], mean)
 medianas_075 <- sapply(trainingData_075[,1:520], median)
 modas_075 <- sapply(trainingData_075[,1:520], mo)
