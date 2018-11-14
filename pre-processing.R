@@ -1,3 +1,10 @@
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(sampling)
+library(caret)
+
+
 #1. CAMBIO TIPO DATOS
 #1.1. cambio tipo de datos trainingData
 trainingData$FLOOR <- as.factor(trainingData$FLOOR)
@@ -38,58 +45,41 @@ userID_count
 var(userID_count$count)
 
 #3. REDUCING TRAININGDATA 
-#3.1. Reducing in rows
-tdr <- nrow(trainingData)
-trainingData_075 <- trainingData[sample(nrow(trainingData), tdr*0.75), ]
+#3.1. Reducing in atributes
+#3.1.1 (opción 1) código para reducir columnas desde 1 a 520 (puntos wifi) usando la media/mediana - tan solo hay que cambiar FUN 
+totalSet <- bind_rows(trainingData,validationData)
+medias_075 <- sapply(totalSet[,1:520], mean)
+medianas_075 <- sapply(totalSet[,1:520], median)
+indices_medias <- which(medias_075 > 95)
+length(indices_medias)
+trainingData_2 <- trainingData[,-indices_medias]
+#finado medias_075 > 95 nos quedamos con 285 columnas 
 
-#3.2. Reducing in atributes
-#3.2.1 código para reducir columnas desde 1 a 520 (puntos wifi) usando la media/mediana - tan solo hay que cambiar FUN 
-medias_075 <- sapply(trainingData_075[,1:520], mean)
-medianas_075 <- sapply(trainingData_075[,1:520], median)
-indices_medias_075 <- which(medias_075 > 95)
-length(indices_medias_075)
-trainingData_075_r <- trainingData_075[,-indices_medias_075]
-
-#3.2.2. código para reducir puntos wifi aplicando FUN que genere un vector TRUE/FASLE según la proporción de valores de una misma columna 
-#que están dentro de un rango dado. x = dataframe, a = rango, b = proporción
-minNivelWifi <- function(x,a,b) {
-  vLower_a <- c()
-  for(i in c(1:520)) {
-    countV = 0
-    for(j in c(1:nrow(x))){
-      if(x[j,i] >= a && x[j,i] <= 0){
-        countV =+ 1
-      }
-    }
-    if (countV >= round(nrow(x)*b)){
-      append(vLower_a,TRUE)
-    }
-    else {
-      append(vLower_a,FALSE) 
-    }
+#3.1.2 (opción2) código para reducir columnas mediante función apply
+my_func <- function(x) {
+  c <- length(which(x <= -5 & x>= -60))
+  if(c>20){
+    return (1)
   }
-  return(vLower_a)
+  else{return(0)}
 }
 
-col_trainingData_075 <- minNivelWifi(trainingData,-80,0.25)
+vector_col_1_0 <- apply(trainingData[,1:520],2,my_func)
+vector_col_1 <- which(vector_col_1_0 == 1)
+vector_col_0 <- which(vector_col_1_0 == 0)
+trainingData_2_2 <- trainingData[,-vector_col_0]
+# si fijamos que c en la función my_func devuele 1 si es más grande de 20, nos quedamos con 213 columnas. 
 
-#3.2.3 Se genera una función para quedarse con los 10 primeros valores más cercanos a 0. Parámetro x es tabla y q númerode valores a mostrar por fila
 
-soloMejoresPuntos <- function(x,a){
-    matriz <- matrix()
-    for(row in c(1:nrow(x))) {
-      rowVector = c()
-      for (col in c(1:ncol(x))) {
-        append(rowVector,x[row,col]) 
-      }
-      row_vector_sort <- (sort(abs(rowVector))) 
-      row_vector_a <- row_vector_sort[1:a]
-      matriz <- rbind(matriz,row_vector_a)
-      rm(rowVector,row_vector_sort,row_vector_a)
-    } 
-    return(matriz)
-}
-  
+#3.2. Reducing in rows
+tdr <- nrow(trainingData)
+#Para estratificar según variavles BUILDINGID necesitamos saber la distribución de sus 3 categorías. 
+building_id_count <- trainingData_2_2 %>% group_by(BUILDINGID) %>% summarise(count = n())
+strata_vector <- strata(trainingData_2_2, c("BUILDINGID"), size = c(524,519,949))
+trainingData_red <- trainingData_2_2[strata_vector$ID_unit, ]
+
+
+
 
 
 
