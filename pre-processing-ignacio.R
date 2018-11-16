@@ -43,6 +43,7 @@ ggplot(building_floor_count, aes(x = building_floor_count$BUILDINGID, y = buildi
 geom_col(position = "dodge") + ggtitle("Nº veces Buildings & Floors") + labs(x="Buildings & Floors", y = "Count")
 building_floor_count
 var(building_floor_count$count)  
+# Ignacio: According to your results, what building and/or floor will be easier to predict?
 #2.3. distribución PhoneId
 # Ignacio: What is telling you the histogram of phoneID? 
 phoneId_count <- trainingData %>% group_by(PHONEID) %>% summarise(count = n())
@@ -50,7 +51,7 @@ ggplot(phoneId_count, aes(x=PHONEID, y=phoneId_count$count)) + geom_col() + ggti
 phoneId_count
 var(phoneId_count$count)
 
-# Going an stup further. Take the role of an student just landed to the campus. Do you know beforehand his/her phoneID? Moreover, his/her
+# Going an step further. Take the role of an student just landed to the campus. Do you know beforehand his/her phoneID? Moreover, his/her
 # phoneID will be in the training set? ;)
 
 #2.4. distribución USERID
